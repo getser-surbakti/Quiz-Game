@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            text-align: center;
+        }
+        .word {
+            font-size: 24px;
+            letter-spacing: 10px;
+            margin-bottom: 20px;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .guess-input {
+            margin-top: 20px;
+        }
+        .hangman {
+            margin-top: 20px;
+        }
+        .attempts-left {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .hangman-image {
+            width: 150px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hangman Game</h1>
+        <div class="word" id="word"></div>
+        <div class="guess-input">
+            <input type="text" id="guess" maxlength="1">
+            <button onclick="makeGuess()">Guess</button>
+        </div>
+        <div class="message" id="message"></div>
+        <div class="attempts-left" id="attempts-left"></div>
+        <div class="hangman" id="hangman">
+            <img id="hangman-image" class="hangman-image" src="images/hangman0.png" alt="Hangman">
+        </div>
+    </div>
+
+    <script>
+        const words = ['parallel', 'isosceles', 'composite', 'prime', 'vertices', 'edges', 'perimeter'];
+        let chosenWord = words[Math.floor(Math.random() * words.length)];
+        let wordDisplay = Array(chosenWord.length).fill('_');
+        let attempts = 8;
+
+        document.getElementById('word').textContent = wordDisplay.join(' ');
+        document.getElementById('attempts-left').textContent = `Attempts left: ${attempts}`;
+
+        function makeGuess() {
+            const guess = document.getElementById('guess').value.toLowerCase();
+            document.getElementById('guess').value = '';
+            if (guess && guess.length === 1) {
+                if (chosenWord.includes(guess)) {
+                    for (let i = 0; i < chosenWord.length; i++) {
+                        if (chosenWord[i] === guess) {
+                            wordDisplay[i] = guess;
+                        }
+                    }
+                } else {
+                    attempts--;
+                    updateHangmanImage();
+                }
+                updateGame();
+            }
+        }
+
+        function updateGame() {
+            document.getElementById('word').textContent = wordDisplay.join(' ');
+            document.getElementById('attempts-left').textContent = `Attempts left: ${attempts}`;
+            if (attempts <= 0) {
+                document.getElementById('message').textContent = `You ran out of attempts. The word was: ${chosenWord}. You lost.`;
+                disableInput();
+            } else if (!wordDisplay.includes('_')) {
+                document.getElementById('message').textContent = "You guessed the word! You survived.";
+                disableInput();
+            }
+        }
+
+        function updateHangmanImage() {
+            const hangmanImage = document.getElementById('hangman-image');
+            hangmanImage.src = `images/hangman${8 - attempts}.png`;
+        }
+
+        function disableInput() {
+            document.getElementById('guess').disabled = true;
+            document.querySelector('.guess-input button').disabled = true;
+        }
+    </script>
+</body>
+</html>
